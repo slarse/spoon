@@ -1064,13 +1064,12 @@ public class ReferenceBuilder {
 				if (isNoClasspath && containsStarImport(ctx.compilationunitdeclaration.imports)) {
 					// If there is an unresolved star import in noclasspath,
 					// we can't tell which package the type belongs to (#3337)
-					CtPackageReference pkgRef = jdtTreeBuilder.getFactory().Core().createPackageReference();
-					pkgRef.setImplicit(true);
-					ref.setPackage(pkgRef);
+					ref.setPackage(jdtTreeBuilder.getFactory().Core().createPackageReference());
 				} else {
 					// otherwise the type must belong to the CU's package (#1293)
 					ref.setPackage(ctx.compilationUnitSpoon.getDeclaredPackage().getReference());
 				}
+				ref.getPackage().setImplicit(true);
 			}
 		} else {
 			throw new AssertionError("unexpected declaring type: " + declaring.getClass() + " of " + declaring);
