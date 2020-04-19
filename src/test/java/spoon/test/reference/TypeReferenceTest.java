@@ -39,12 +39,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtParameterReference;
-import spoon.reflect.reference.CtTypeParameterReference;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.reference.*;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
@@ -701,5 +696,34 @@ public class TypeReferenceTest {
 		// test type with null package
 		CtTypeReference tr2 = fields.get(0).getType();
 		assertTrue(vars.get(0).getReference().getType().canAccess(tr2));
+	}
+
+	@Test
+	public void testQualifiedArrayTypeReferenceNoClasspath() {
+		// contract: component type of explicitly qualified array type reference should have explicit package reference
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/QualifiedArrayType.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		List<CtArrayTypeReference<?>> refs = model.getElements(e -> true);
+
+		System.out.println(model.getAllTypes());
+
+		int loopIterations = 0; // for meta assert
+		for (CtArrayTypeReference<?> arrayTypeRef : refs) {
+		    CtTypeReference<?> compType = getDeepestComponentType(arrayTypeRef);
+		    assertFalse(compType.getPackage().isImplicit());
+			loopIterations++;
+		}
+
+		assertTrue("Test loop did not execute", loopIterations > 0);
+	}
+
+	private static CtTypeReference<?> getDeepestComponentType(CtArrayTypeReference<?> arrayTypeRef) {
+		CtReference ref = arrayTypeRef;
+		while (ref instanceof CtArrayTypeReference) {
+			ref = ((CtArrayTypeReference<?>) ref).getComponentType();
+		}
+		return (CtTypeReference<?>) ref;
 	}
 }
