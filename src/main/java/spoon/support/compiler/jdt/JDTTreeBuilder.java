@@ -993,7 +993,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		if (arrayType != null) {
 			arrayType.getArrayType().setAnnotations(this.references.buildTypeReference(arrayQualifiedTypeReference, scope).getAnnotations());
-			helper.handleImplicit(arrayQualifiedTypeReference, arrayType);
 		}
 
 		return true;

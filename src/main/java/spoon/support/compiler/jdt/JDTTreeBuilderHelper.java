@@ -531,7 +531,7 @@ public class JDTTreeBuilderHelper {
 				if (packageRef != null) {
 					if (packageNames != null && packageNames.length == off) {
 						//there is full package name
-						packageRef.setImplicit(false);
+						//keep it explicit
 						return;
 					}
 					if (off == 0) {
